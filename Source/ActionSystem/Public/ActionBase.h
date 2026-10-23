@@ -12,6 +12,9 @@ class ACTIONSYSTEM_API UActionBase : public UObject
 	GENERATED_BODY()
 	
 public:
+	//---------------------------------------
+	// Public API
+	//---------------------------------------
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActionSystem", meta = (WorldContext = "WorldContextObject"))
 	void Init(UObject* WorldContextObject);
 	
@@ -20,9 +23,21 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActionSystem")
 	void Destroy();
-	
+
+	//---------------------------------------
+	// Getters
+	//---------------------------------------
+	bool GetAutoInit() const { return bAutoInit; }
+
+	//---------------------------------------
+	// Local Getters
+	//---------------------------------------
 	UFUNCTION(BlueprintCallable, Category="ActionSystem")
 	UObject* GetOwner() const { return  GetOuter(); }
 	
 	virtual UWorld* GetWorld() const override;
+	
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Action|Advanced", meta = (AllowPrivateAccess = true))
+	bool bAutoInit = true;
 };

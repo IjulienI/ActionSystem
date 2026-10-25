@@ -55,8 +55,9 @@ The class shows up in the component's action picker straight away. Designers can
 
 ### Available actions
 
-- **Destroy Actors**: destroys a list of actors.
-- **Light Switch**: toggles a list of lights, with a configurable starting state.
+- **Sequential**: Wait until the previous action is complete before starting the next one.
+- **Parallel**: Execute all of its actions at once.
+- **Delay**: Wait a while.
 
 ## Design decisions
 
@@ -78,7 +79,7 @@ Being upfront about what does not work yet:
 ## Roadmap
 
 **Next up**
-- [ ] Latent actions: completion callback, sequential and parallel execution, cancellation
+- [x] Latent actions: completion callback, sequential and parallel execution
 - [ ] Instigator passed to `Execute`, so actions can target whoever triggered them
 - [ ] Flexible targets: self, instigator, specific actor, or actors with a tag
 

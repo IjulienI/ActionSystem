@@ -9,6 +9,16 @@ void UActionBase::Init_Implementation(UObject* WorldContextObject)
 
 void UActionBase::Execute_Implementation()
 {
+	if (!Advanced.bAutoInit)
+	{
+		UWorld* World = GetWorld();
+		if (!ensure(World))
+		{
+			return;
+		}
+		
+		Init(World);
+	}
 }
 
 void UActionBase::Destroy_Implementation()

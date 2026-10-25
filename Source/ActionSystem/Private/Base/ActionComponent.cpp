@@ -30,7 +30,7 @@ void UActionComponent::InitActions(const bool bAutoInit) const
 		return;
 	}
 	
-	if (!ensureMsgf(RootAction, TEXT("Current Action is nullptr"))) return;
+	if (!ensureMsgf(RootAction, TEXT("Current Action is nullptr")) || !bAutoInit) return;
 	
 	RootAction->Init(World);
 }

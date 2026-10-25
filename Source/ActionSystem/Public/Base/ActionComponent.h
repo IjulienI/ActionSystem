@@ -7,7 +7,7 @@
 #include "ActionComponent.generated.h"
 
 
-class UActionBase;
+class UCompositeAction;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ACTIONSYSTEM_API UActionComponent : public UActorComponent
@@ -27,18 +27,18 @@ public:
 	// Public API
 	//---------------------------------------
 	UFUNCTION(BlueprintCallable, Category = "ActionSystem")
-	void InitActions(bool bAutoInit = false);
+	void InitActions(bool bAutoInit = false) const;
 	
 	UFUNCTION(BlueprintCallable, Category = "ActionSystem")
-	void ExecuteActions();
+	void ExecuteActions() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "ActionSystem")
-	void DestroyActions();
+	void DestroyActions() const;
 
 private:
 	//---------------------------------------
 	// Internal vars
 	//---------------------------------------
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActionSystem", meta = (AllowPrivateAccess = true))
-	TArray<UActionBase*> Actions;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActionSystem", meta = (AllowPrivateAccess = true, TitleProperty = "ActionName"))
+	TObjectPtr<UCompositeAction> RootAction;
 };

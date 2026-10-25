@@ -6,8 +6,6 @@ A small Unreal Engine plugin that lets designers attach reusable, configurable a
 ![Unreal Engine](https://img.shields.io/badge/Unreal%20Engine-5.4+-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-<!-- TODO: add a short GIF here: adding a Light Switch action in the Details panel, then triggering it in PIE. -->
-
 > **Work in progress.** The core works and is usable, but the API is still moving and several features are missing. See the [roadmap](#roadmap).
 
 ---

@@ -13,7 +13,7 @@ class ACTIONSYSTEM_API USequentialAction : public UCompositeAction
 	
 public:
 	USequentialAction();
-	virtual void Execute_Implementation() override;
+	virtual void Execute_Implementation(AActor* Instigator) override;
 	
 private:
 	void ExecuteAction();

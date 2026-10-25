@@ -35,11 +35,11 @@ void UActionComponent::InitActions(const bool bAutoInit) const
 	RootAction->Init(World);
 }
 
-void UActionComponent::ExecuteActions() const
+void UActionComponent::ExecuteActions(AActor* Instigator) const
 {
 	if (!ensureMsgf(RootAction, TEXT("Current Action is nullptr"))) return;;
 	
-	RootAction->Execute();
+	RootAction->Execute(Instigator);
 }
 
 void UActionComponent::DestroyActions() const

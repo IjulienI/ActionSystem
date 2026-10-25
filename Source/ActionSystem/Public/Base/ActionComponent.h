@@ -30,7 +30,7 @@ public:
 	void InitActions(bool bAutoInit = false) const;
 	
 	UFUNCTION(BlueprintCallable, Category = "ActionSystem")
-	void ExecuteActions() const;
+	void ExecuteActions(AActor* Instigator) const;
 	
 	UFUNCTION(BlueprintCallable, Category = "ActionSystem")
 	void DestroyActions() const;

@@ -8,9 +8,9 @@ USequentialAction::USequentialAction()
 	Advanced.ActionName = "Sequential";
 }
 
-void USequentialAction::Execute_Implementation()
+void USequentialAction::Execute_Implementation(AActor* InInstigator)
 {
-	Super::Execute_Implementation();
+	Super::Execute_Implementation(InInstigator);
 	
 	ActionIndex = 0;
 	ExecuteAction();
@@ -32,7 +32,7 @@ void USequentialAction::ExecuteAction()
 
 	UActionBase* Action = Actions[ActionIndex];
 	Action->OnFinishDelegate.AddUniqueDynamic(this, &USequentialAction::OnEndAction);
-	Action->Execute();
+	Action->Execute(Instigator);
 }
 
 void USequentialAction::OnEndAction()

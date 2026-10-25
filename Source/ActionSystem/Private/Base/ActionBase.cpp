@@ -7,8 +7,10 @@ void UActionBase::Init_Implementation(UObject* WorldContextObject)
 {
 }
 
-void UActionBase::Execute_Implementation()
+void UActionBase::Execute_Implementation(AActor* InInstigator)
 {
+	Instigator = InInstigator;
+	
 	if (!Advanced.bAutoInit)
 	{
 		UWorld* World = GetWorld();

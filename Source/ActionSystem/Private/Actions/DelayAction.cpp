@@ -3,9 +3,9 @@
 
 #include "Actions/DelayAction.h"
 
-void UDelayAction::Execute_Implementation()
+void UDelayAction::Execute_Implementation(AActor* InInstigator)
 {
-	Super::Execute_Implementation();
+	Super::Execute_Implementation(InInstigator);
 	
 	
 	const UWorld* World = GetWorld();

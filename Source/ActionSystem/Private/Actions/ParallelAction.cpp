@@ -8,9 +8,9 @@ UParallelAction::UParallelAction()
 	Advanced.ActionName = "Parallel";
 }
 
-void UParallelAction::Execute_Implementation()
+void UParallelAction::Execute_Implementation(AActor* InInstigator)
 {
-	Super::Execute_Implementation();
+	Super::Execute_Implementation(InInstigator);
 	
 	RemainingActions = 0;
 	for (TObjectPtr<UActionBase>& Action : Actions)
@@ -31,7 +31,7 @@ void UParallelAction::Execute_Implementation()
 	{
 		if (Action)
 		{
-			Action->Execute();
+			Action->Execute(Instigator);
 		}
 	}
 }

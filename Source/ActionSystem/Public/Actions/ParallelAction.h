@@ -13,7 +13,7 @@ class ACTIONSYSTEM_API UParallelAction : public UCompositeAction
 	
 public:
 	UParallelAction();
-	virtual void Execute_Implementation() override;
+	virtual void Execute_Implementation(AActor* Instigator) override;
 
 private:
 	int32 RemainingActions = 0;

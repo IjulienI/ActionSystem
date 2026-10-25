@@ -33,7 +33,7 @@ public:
 	void Init(UObject* WorldContextObject);
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActionSystem")
-	void Execute();
+	void Execute(AActor* InInstigator);
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActionSystem")
 	void Destroy();
@@ -60,7 +60,7 @@ public:
 	//---------------------------------------
 	// Public vars
 	//---------------------------------------
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Action", AdvancedDisplay, meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Action", AdvancedDisplay)
 	FActionAdvancedSettings Advanced;
 
 protected:
@@ -69,4 +69,10 @@ protected:
 	//---------------------------------------
 	UFUNCTION(BlueprintCallable, Category = "ActionSystem")
 	void Finish() const;
+	
+	//---------------------------------------
+	// Internal vars
+	//---------------------------------------
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Action", AdvancedDisplay)
+	TObjectPtr<AActor> Instigator;
 };

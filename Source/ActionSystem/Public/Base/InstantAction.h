@@ -12,9 +12,9 @@ class ACTIONSYSTEM_API UInstantAction : public UActionBase
 	GENERATED_BODY()
 	
 public:
-	virtual void Execute_Implementation() override final
+	virtual void Execute_Implementation(AActor* InInstigator) override final
 	{
-		Super::Execute_Implementation();
+		Super::Execute_Implementation(InInstigator);
 		Run();
 		Finish();
 	}

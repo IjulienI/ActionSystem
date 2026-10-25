@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Julien soum. Licensed under the MIT License.
 
 
-#include "ActionBase.h"
+#include "Base/ActionBase.h"
 
 void UActionBase::Init_Implementation(UObject* WorldContextObject)
 {
@@ -26,4 +26,9 @@ UWorld* UActionBase::GetWorld() const
 		return Outer->GetWorld();
 	}
 	return nullptr;
+}
+
+void UActionBase::Finish() const
+{
+	OnFinishDelegate.Broadcast();
 }

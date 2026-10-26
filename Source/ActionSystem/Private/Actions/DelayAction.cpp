@@ -3,6 +3,11 @@
 
 #include "Actions/DelayAction.h"
 
+UDelayAction::UDelayAction()
+{
+	Advanced.ActionName = "Delay";
+}
+
 void UDelayAction::Execute_Implementation(AActor* InInstigator)
 {
 	Super::Execute_Implementation(InInstigator);

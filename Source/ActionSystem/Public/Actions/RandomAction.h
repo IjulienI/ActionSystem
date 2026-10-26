@@ -15,6 +15,7 @@ class ACTIONSYSTEM_API URandomAction : public UCompositeAction
 	GENERATED_BODY()
 	
 public:
+	URandomAction();
 	virtual void Execute_Implementation(AActor* Instigator) override;
 	virtual void OnCancel_Implementation() override;
 	

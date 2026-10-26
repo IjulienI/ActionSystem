@@ -5,6 +5,11 @@
 
 #include "ActionSystem.h"
 
+URandomAction::URandomAction()
+{
+	Advanced.ActionName = "Random";
+}
+
 void URandomAction::Execute_Implementation(AActor* InInstigator)
 {
 	Super::Execute_Implementation(InInstigator);

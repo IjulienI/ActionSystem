@@ -5,6 +5,11 @@
 
 #include "Engine/Light.h"
 
+ULightSwitchAction::ULightSwitchAction()
+{
+	Advanced.ActionName = "LightSwitch";
+}
+
 void ULightSwitchAction::OnInit_Implementation(UObject* WorldContextObject)
 {
 	Super::OnInit_Implementation(WorldContextObject);

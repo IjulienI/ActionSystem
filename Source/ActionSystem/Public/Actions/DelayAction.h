@@ -13,6 +13,7 @@ class ACTIONSYSTEM_API UDelayAction : public UActionBase
 	GENERATED_BODY()
 	
 public:
+	UDelayAction();
 	virtual void Execute_Implementation(AActor* Instigator) override;
 	virtual void OnCancel_Implementation() override;
 	virtual void OnDestroy_Implementation() override;

@@ -3,6 +3,11 @@
 
 #include "Actions/TeleportActorAction.h"
 
+UTeleportActorAction::UTeleportActorAction()
+{
+	Advanced.ActionName = "TeleportActor";
+}
+
 void UTeleportActorAction::Run_Implementation()
 {
 	Super::Run_Implementation();

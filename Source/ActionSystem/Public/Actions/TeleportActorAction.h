@@ -12,6 +12,7 @@ class ACTIONSYSTEM_API UTeleportActorAction : public UInstantAction
 	GENERATED_BODY()
 	
 public:
+	UTeleportActorAction();
 	virtual void Run_Implementation() override;
 	
 private:

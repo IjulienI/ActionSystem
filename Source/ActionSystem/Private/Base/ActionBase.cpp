@@ -44,3 +44,17 @@ void UActionBase::Finish() const
 {
 	OnFinishDelegate.Broadcast();
 }
+
+AActor* UActionBase::ResolveTarget(const FActionTarget& Target) const
+{
+	switch (Target.Source)
+	{
+	case EActionTargetSource::Self:
+		return GetTypedOuter<AActor>();
+	case EActionTargetSource::Instigator:
+		return Instigator;
+	case EActionTargetSource::Reference:
+		return Target.Reference;
+	}
+	return nullptr;
+}

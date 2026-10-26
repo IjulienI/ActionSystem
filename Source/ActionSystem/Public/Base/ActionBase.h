@@ -20,6 +20,26 @@ struct FActionAdvancedSettings
 	FString ActionName = TEXT("Action");
 };
 
+UENUM(BlueprintType)
+enum class EActionTargetSource : uint8
+{
+	Self,
+	Instigator,
+	Reference
+};
+
+USTRUCT(BlueprintType)
+struct FActionTarget
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Target")
+	EActionTargetSource Source = EActionTargetSource::Instigator;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Target", meta = (EditCondition = "Source == EActionTargetSource::Reference", EditConditionHides))
+	TObjectPtr<AActor> Reference;
+};
+
 UCLASS(Abstract, Blueprintable, EditInlineNew, DefaultToInstanced, CollapseCategories)
 class ACTIONSYSTEM_API UActionBase : public UObject
 {
@@ -75,4 +95,10 @@ protected:
 	//---------------------------------------
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Action", AdvancedDisplay)
 	TObjectPtr<AActor> Instigator;
+
+	//---------------------------------------
+	// Internal funcs
+	//---------------------------------------
+	UFUNCTION(BlueprintPure, Category = "ActionSystem")
+	AActor* ResolveTarget(const FActionTarget& Target) const;
 };

@@ -16,4 +16,10 @@ class ACTIONSYSTEM_API URandomAction : public UCompositeAction
 	
 public:
 	virtual void Execute_Implementation(AActor* Instigator) override;
+	
+private:
+	UFUNCTION()
+	void OnEndAction();
+	
+	TObjectPtr<UActionBase> SelectedAction;
 };

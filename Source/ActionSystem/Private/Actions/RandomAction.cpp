@@ -6,12 +6,28 @@
 void URandomAction::Execute_Implementation(AActor* InInstigator)
 {
 	Super::Execute_Implementation(InInstigator);
+	
+	if (Actions.IsEmpty())
+	{
+		Finish();
+		return;
+	}
 
 	const int32 RandomIndex = FMath::RandRange(0, Actions.Num() -1);
-	const auto SelectedAction = Actions[RandomIndex];
+	SelectedAction = Actions[RandomIndex];
 	if (ensure(SelectedAction))
 	{
+		SelectedAction->OnFinishDelegate.AddUniqueDynamic(this, &URandomAction::OnEndAction);
 		SelectedAction->Execute(Instigator);
 	}
+}
+
+void URandomAction::OnEndAction()
+{
+	if (SelectedAction)
+	{
+		SelectedAction->OnFinishDelegate.RemoveDynamic(this, &URandomAction::OnEndAction);
+	}
+	
 	Finish();
 }

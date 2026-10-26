@@ -5,9 +5,9 @@
 
 #include "Engine/Light.h"
 
-void ULightSwitchAction::Init_Implementation(UObject* WorldContextObject)
+void ULightSwitchAction::OnInit_Implementation(UObject* WorldContextObject)
 {
-	Super::Init_Implementation(WorldContextObject);
+	Super::OnInit_Implementation(WorldContextObject);
 	
 	for (TObjectPtr<ALight>& Light : Lights)
 	{

@@ -15,7 +15,7 @@ UActionComponent::UActionComponent()
 void UActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	InitActions(true);
+	InitActions();
 }
 
 void UActionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -24,7 +24,7 @@ void UActionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void UActionComponent::InitActions(const bool bAutoInit) const
+void UActionComponent::InitActions() const
 {
 	UWorld* World = GetWorld();
 	if (!World)
@@ -34,7 +34,7 @@ void UActionComponent::InitActions(const bool bAutoInit) const
 	
 	if (RootAction)
 	{
-		RootAction->Init(World);
+		RootAction->Initialize(World);
 		return;
 	}
 	UE_LOG(LogActionSystem, Warning, TEXT("UActionComponent::InitActions failed : Root Action is nullptr in %s"), *GetOwner()->GetName());
@@ -54,5 +54,5 @@ void UActionComponent::DestroyActions() const
 {
 	if (!RootAction) return;
 	
-	RootAction->Destroy();
+	RootAction->Deinitialize();
 }

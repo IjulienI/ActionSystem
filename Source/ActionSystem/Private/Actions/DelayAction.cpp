@@ -24,11 +24,11 @@ void UDelayAction::OnEndTimer()
 	Finish();
 }
 
-void UDelayAction::Destroy_Implementation()
+void UDelayAction::OnDestroy_Implementation()
 {
 	if (const UWorld* World = GetWorld())
 	{
 		World->GetTimerManager().ClearTimer(TimerHandle);
 	}
-	Super::Destroy_Implementation();
+	Super::OnDestroy_Implementation();
 }

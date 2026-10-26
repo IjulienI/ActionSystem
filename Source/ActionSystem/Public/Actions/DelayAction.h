@@ -14,7 +14,7 @@ class ACTIONSYSTEM_API UDelayAction : public UActionBase
 	
 public:
 	virtual void Execute_Implementation(AActor* Instigator) override;
-	virtual void Destroy_Implementation() override;
+	virtual void OnDestroy_Implementation() override;
 	
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Action", meta = (AllowPrivateAccess = true, ClampMin = 0, Units = "s"))

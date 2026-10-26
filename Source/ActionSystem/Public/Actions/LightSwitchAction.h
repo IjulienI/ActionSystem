@@ -14,7 +14,7 @@ class ACTIONSYSTEM_API ULightSwitchAction : public UInstantAction
 	GENERATED_BODY()
 	
 public:
-	virtual void Init_Implementation(UObject* WorldContextObject) override;
+	virtual void OnInit_Implementation(UObject* WorldContextObject) override;
 	virtual void Run_Implementation() override;
 	
 private:

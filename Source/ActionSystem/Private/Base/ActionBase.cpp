@@ -3,7 +3,28 @@
 
 #include "Base/ActionBase.h"
 
-void UActionBase::Init_Implementation(UObject* WorldContextObject)
+
+void UActionBase::Initialize(UObject* WorldContextObject)
+{
+	if (bInitialized) return;
+	
+	bInitialized = true;
+	OnInit(WorldContextObject);
+}
+
+void UActionBase::OnInit_Implementation(UObject* WorldContextObject)
+{
+}
+
+void UActionBase::Deinitialize()
+{
+	if (!bInitialized) return;
+	
+	OnDestroy();
+	bInitialized = false;
+}
+
+void UActionBase::OnDestroy_Implementation()
 {
 }
 
@@ -11,20 +32,13 @@ void UActionBase::Execute_Implementation(AActor* InInstigator)
 {
 	Instigator = InInstigator;
 	
-	if (!Advanced.bAutoInit)
+	if (!bInitialized)
 	{
-		UWorld* World = GetWorld();
-		if (!ensure(World))
+		if (UWorld* World = GetWorld())
 		{
-			return;
+			Initialize(World);
 		}
-		
-		Init(World);
 	}
-}
-
-void UActionBase::Destroy_Implementation()
-{
 }
 
 UWorld* UActionBase::GetWorld() const

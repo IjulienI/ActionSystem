@@ -49,19 +49,20 @@ public:
 	//---------------------------------------
 	// Public API
 	//---------------------------------------
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActionSystem", meta = (WorldContext = "WorldContextObject"))
-	void Init(UObject* WorldContextObject);
+	UFUNCTION(BlueprintCallable, Category = "ActionSystem", meta = (WorldContext = "WorldContextObject"))
+	void Initialize(UObject* WorldContextObject);
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActionSystem")
 	void Execute(AActor* InInstigator);
 	
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActionSystem")
-	void Destroy();
+	UFUNCTION(BlueprintCallable, Category = "ActionSystem")
+	void Deinitialize();
 
 	//---------------------------------------
 	// Getters
 	//---------------------------------------
 	bool GetAutoInit() const { return Advanced.bAutoInit; }
+	bool GetInitialized() const { return bInitialized; }
 
 	//---------------------------------------
 	// Local Getters
@@ -87,6 +88,12 @@ protected:
 	//---------------------------------------
 	// Internal API
 	//---------------------------------------
+	UFUNCTION(BlueprintNativeEvent, Category = "ActionSystem")
+	void OnInit(UObject* WorldContextObject);
+	
+	UFUNCTION(BlueprintNativeEvent, Category = "ActionSystem")
+	void OnDestroy();
+	
 	UFUNCTION(BlueprintCallable, Category = "ActionSystem")
 	void Finish() const;
 	
@@ -95,6 +102,8 @@ protected:
 	//---------------------------------------
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Action", AdvancedDisplay)
 	TObjectPtr<AActor> Instigator;
+	
+	bool bInitialized = false;
 
 	//---------------------------------------
 	// Internal funcs

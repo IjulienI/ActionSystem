@@ -12,27 +12,29 @@ class ACTIONSYSTEM_API UCompositeAction : public UActionBase
 	GENERATED_BODY()
 	
 public:
-	virtual void Init_Implementation(UObject* WorldContextObject) override
+	virtual void OnInit_Implementation(UObject* WorldContextObject) override
 	{
-		Super::Init_Implementation(WorldContextObject);
+		Super::OnInit_Implementation(WorldContextObject);
 		for (UActionBase* Action : Actions)
 		{
-			if (!ensure(Action)) continue;
-				
-			Action->Init(WorldContextObject);
+			if (Action && Action->GetAutoInit())
+			{
+				Action->Initialize(WorldContextObject);
+			}
 		}
 	}
 	
-	virtual void Destroy_Implementation() override
+	virtual void OnDestroy_Implementation() override
 	{
 		for (UActionBase* Action : Actions)
 		{
-			if (!ensure(Action)) continue;
-				
-			Action->Destroy();
+			if (Action)
+			{
+				Action->Deinitialize();
+			}
 		}
-		Actions.Empty();
-		Super::Destroy_Implementation();
+		
+		Super::OnDestroy_Implementation();
 	}
 	
 protected:

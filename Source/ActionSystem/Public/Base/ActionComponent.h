@@ -27,7 +27,7 @@ public:
 	// Public API
 	//---------------------------------------
 	UFUNCTION(BlueprintCallable, Category = "ActionSystem")
-	void InitActions(bool bAutoInit = false) const;
+	void InitActions() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "ActionSystem")
 	void ExecuteActions(AActor* Instigator) const;

@@ -2,6 +2,7 @@
 
 #include "ActionSystem.h"
 
+DEFINE_LOG_CATEGORY(LogActionSystem);
 #define LOCTEXT_NAMESPACE "FActionSystemModule"
 
 void FActionSystemModule::StartupModule()

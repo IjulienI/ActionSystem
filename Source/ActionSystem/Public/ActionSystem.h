@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
+ACTIONSYSTEM_API DECLARE_LOG_CATEGORY_EXTERN(LogActionSystem, Log, All);
+
 class FActionSystemModule : public IModuleInterface
 {
 public:

@@ -2,6 +2,8 @@
 
 
 #include "Base/ActionComponent.h"
+
+#include "ActionSystem.h"
 #include "Base/CompositeAction.h"
 
 
@@ -30,21 +32,27 @@ void UActionComponent::InitActions(const bool bAutoInit) const
 		return;
 	}
 	
-	if (!ensureMsgf(RootAction, TEXT("Current Action is nullptr")) || !bAutoInit) return;
-	
-	RootAction->Init(World);
+	if (RootAction)
+	{
+		RootAction->Init(World);
+		return;
+	}
+	UE_LOG(LogActionSystem, Warning, TEXT("UActionComponent::InitActions failed : Root Action is nullptr in %s"), *GetOwner()->GetName());
 }
 
 void UActionComponent::ExecuteActions(AActor* Instigator) const
 {
-	if (!ensureMsgf(RootAction, TEXT("Current Action is nullptr"))) return;;
-	
-	RootAction->Execute(Instigator);
+	if (RootAction)
+	{
+		RootAction->Execute(Instigator);
+		return;
+	}
+	UE_LOG(LogActionSystem, Warning, TEXT("UActionComponent::ExecuteActions failed : Root Action is nullptr in %s"), *GetOwner()->GetName());
 }
 
 void UActionComponent::DestroyActions() const
 {
-	if (!ensureMsgf(RootAction, TEXT("Current Action is nullptr"))) return;;
+	if (!RootAction) return;
 	
 	RootAction->Destroy();
 }

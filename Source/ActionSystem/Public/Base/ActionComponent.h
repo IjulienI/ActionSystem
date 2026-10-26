@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ActionSystemTypes.h"
 #include "Components/ActorComponent.h"
 #include "ActionComponent.generated.h"
 
@@ -30,7 +31,7 @@ public:
 	void InitActions() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "ActionSystem")
-	void ExecuteActions(AActor* Instigator) const;
+	void ExecuteActions(AActor* InInstigator);
 	
 	UFUNCTION(BlueprintCallable, Category = "ActionSystem")
 	void DestroyActions() const;
@@ -40,5 +41,17 @@ private:
 	// Internal vars
 	//---------------------------------------
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActionSystem", meta = (AllowPrivateAccess = true))
+	EActionTriggerPolicy TriggerPolicy = EActionTriggerPolicy::Ignore;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActionSystem", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCompositeAction> RootAction;
+	
+	bool bRunning = false;
+	int32 QueueCounter = 0;
+	
+	UPROPERTY(Transient)
+	TObjectPtr<AActor> Instigator;
+	
+	UFUNCTION()
+	void OnRootActionFinished();
 };

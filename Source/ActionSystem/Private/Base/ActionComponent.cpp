@@ -40,10 +40,29 @@ void UActionComponent::InitActions() const
 	UE_LOG(LogActionSystem, Warning, TEXT("UActionComponent::InitActions failed : Root Action is nullptr in %s"), *GetOwner()->GetName());
 }
 
-void UActionComponent::ExecuteActions(AActor* Instigator) const
+void UActionComponent::ExecuteActions(AActor* InInstigator)
 {
+	if (bRunning)
+	{
+		switch (TriggerPolicy)
+		{
+		case EActionTriggerPolicy::Ignore:
+			return;
+		case EActionTriggerPolicy::Restart:
+			// TODO : Cancel logic
+			return;
+		case EActionTriggerPolicy::Queue:
+			++QueueCounter;
+			return;
+		}
+	}
+	
+	Instigator = InInstigator;
+	
 	if (RootAction)
 	{
+		bRunning = true;
+		RootAction->OnFinishDelegate.AddUniqueDynamic(this, &UActionComponent::OnRootActionFinished);
 		RootAction->Execute(Instigator);
 		return;
 	}
@@ -55,4 +74,19 @@ void UActionComponent::DestroyActions() const
 	if (!RootAction) return;
 	
 	RootAction->Deinitialize();
+}
+
+void UActionComponent::OnRootActionFinished()
+{
+	if (RootAction)
+	{
+		RootAction->OnFinishDelegate.RemoveDynamic(this, &UActionComponent::OnRootActionFinished);
+		bRunning = false;
+	}
+	
+	if (TriggerPolicy == EActionTriggerPolicy::Queue && QueueCounter > 0)
+	{
+		--QueueCounter;
+		ExecuteActions(Instigator);
+	}
 }

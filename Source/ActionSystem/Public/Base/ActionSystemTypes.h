@@ -6,6 +6,17 @@
 #include "ActionSystemTypes.generated.h"
 
 //---------------------------------------
+// TriggerPolicy
+//---------------------------------------
+UENUM(BlueprintType)
+enum class EActionTriggerPolicy : uint8
+{
+	Ignore,
+	Restart UMETA(Hidden),
+	Queue
+};
+
+//---------------------------------------
 // Advanced Tab
 //---------------------------------------
 USTRUCT(BlueprintType)

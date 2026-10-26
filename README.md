@@ -80,15 +80,15 @@ Being upfront about what does not work yet:
 
 **Next up**
 - [x] Latent actions: completion callback, sequential and parallel execution
-- [ ] Instigator passed to `Execute`, so actions can target whoever triggered them
-- [ ] Flexible targets: self, instigator, specific actor, or actors with a tag
+- [x] Instigator passed to `Execute`, so actions can target whoever triggered them
+- [x] Flexible targets: self, instigator, specific actor
 
 **Flow control**
 - [ ] `Delay`, `Sequence`, `Parallel`, `Branch`, `Do Once`, `Random`
 
 **More actions**
 - [ ] Spawn actor, set visibility and collision, toggle component
-- [ ] Move or teleport an actor
+- [x] Move or teleport an actor
 - [ ] Trigger another actor's Action Component
 - [ ] Play sound, Niagara effect, Level Sequence
 - [ ] Load and unload streaming levels

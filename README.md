@@ -116,8 +116,8 @@ New classes show up in the action picker straight away. Actions can also be crea
 - [x] Sequential, Parallel and Random groups
 - [x] Instigator passed to `Execute`
 - [x] Targets: self, instigator, specific actor
-- [ ] Re-trigger policy while running: ignore, restart or queue
-- [ ] Cancel running actions
+- [x] Re-trigger policy while running: ignore, restart or queue
+- [x] Cancel running actions
 - [ ] Targets by actor tag
 
 **Flow control**

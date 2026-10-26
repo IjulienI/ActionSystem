@@ -32,6 +32,7 @@ public:
 	//---------------------------------------
 	bool GetAutoInit() const { return Advanced.bAutoInit; }
 	bool GetInitialized() const { return bInitialized; }
+	AActor* GetInstigator() const { return Instigator; }
 
 	//---------------------------------------
 	// Local Getters
@@ -52,6 +53,15 @@ public:
 	//---------------------------------------
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Action", AdvancedDisplay)
 	FActionAdvancedSettings Advanced;
+	
+	//---------------------------------------
+	// Resolvers
+	//---------------------------------------
+	UFUNCTION(BlueprintPure, Category = "ActionSystem")
+	AActor* ResolveTarget(const FActionTarget& Target) const;
+	
+	UFUNCTION(BlueprintPure, Category = "ActionSystem")
+	bool ResolveTransform(const FActionTransform& InTransform, FTransform& OutTransform) const;
 
 protected:
 	//---------------------------------------
@@ -73,13 +83,4 @@ protected:
 	TObjectPtr<AActor> Instigator;
 	
 	bool bInitialized = false;
-
-	//---------------------------------------
-	// Resolvers
-	//---------------------------------------
-	UFUNCTION(BlueprintPure, Category = "ActionSystem")
-	AActor* ResolveTarget(const FActionTarget& Target) const;
-	
-	UFUNCTION(BlueprintPure, Category = "ActionSystem")
-	bool ResolveTransform(const FActionTransform& InTransform, FTransform& OutTransform) const;
 };

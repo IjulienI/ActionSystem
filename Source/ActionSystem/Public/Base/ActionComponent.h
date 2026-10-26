@@ -39,6 +39,6 @@ private:
 	//---------------------------------------
 	// Internal vars
 	//---------------------------------------
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActionSystem", meta = (AllowPrivateAccess = true, TitleProperty = "ActionName"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActionSystem", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCompositeAction> RootAction;
 };

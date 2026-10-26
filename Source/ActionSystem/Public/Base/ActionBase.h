@@ -16,7 +16,7 @@ struct FActionAdvancedSettings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bAutoInit = true;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Action")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Action")
 	FString ActionName = TEXT("Action");
 };
 

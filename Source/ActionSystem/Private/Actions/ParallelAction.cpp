@@ -36,6 +36,19 @@ void UParallelAction::Execute_Implementation(AActor* InInstigator)
 	}
 }
 
+void UParallelAction::OnCancel_Implementation()
+{
+	for (TObjectPtr<UActionBase>& Action : Actions)
+	{
+		if (Action)
+		{
+			Action->OnFinishDelegate.RemoveDynamic(this, &UParallelAction::OnEndAction);
+		}
+	}
+	
+	Super::OnCancel_Implementation();
+}
+
 void UParallelAction::OnEndAction()
 {
 	if (--RemainingActions > 0)

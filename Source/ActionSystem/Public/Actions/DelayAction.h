@@ -14,6 +14,7 @@ class ACTIONSYSTEM_API UDelayAction : public UActionBase
 	
 public:
 	virtual void Execute_Implementation(AActor* Instigator) override;
+	virtual void OnCancel_Implementation() override;
 	virtual void OnDestroy_Implementation() override;
 	
 private:

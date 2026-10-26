@@ -17,6 +17,7 @@ public:
 	UBranchAction();
 	virtual void OnInit_Implementation(UObject* WorldContextObject) override;
 	virtual void Execute_Implementation(AActor* InInstigator) override;
+	virtual void OnCancel_Implementation() override;
 	virtual void OnDestroy_Implementation() override;
 	
 private:

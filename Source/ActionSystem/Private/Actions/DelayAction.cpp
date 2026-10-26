@@ -18,6 +18,16 @@ void UDelayAction::Execute_Implementation(AActor* InInstigator)
 	World->GetTimerManager().SetTimer(TimerHandle, this, &UDelayAction::OnEndTimer, Duration, false);
 }
 
+void UDelayAction::OnCancel_Implementation()
+{
+	if (const UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().ClearTimer(TimerHandle);
+	}
+	
+	Super::OnCancel_Implementation();
+}
+
 void UDelayAction::OnEndTimer()
 {
 	TimerHandle.Invalidate();

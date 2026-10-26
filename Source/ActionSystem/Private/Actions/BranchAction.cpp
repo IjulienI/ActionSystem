@@ -34,6 +34,25 @@ void UBranchAction::Execute_Implementation(AActor* InInstigator)
 	ChosenAction->Execute(Instigator);
 }
 
+void UBranchAction::OnCancel_Implementation()
+{
+	for (UActionBase* Output : { OnTrue.Get(), OnFalse.Get() })
+	{
+		if (Output)
+		{
+			Output->Cancel();
+		}
+	}
+	
+	if (ChosenAction)
+	{
+		ChosenAction->OnFinishDelegate.RemoveDynamic(this, &UBranchAction::OnChosenActionFinished);
+		ChosenAction = nullptr;
+	}
+	
+	Super::OnCancel_Implementation();
+}
+
 void UBranchAction::OnInit_Implementation(UObject* WorldContextObject)
 {
 	Super::OnInit_Implementation(WorldContextObject);

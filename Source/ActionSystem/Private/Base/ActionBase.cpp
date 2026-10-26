@@ -4,8 +4,6 @@
 #include "Base/ActionBase.h"
 
 #include "ActionSystem.h"
-#include "Chaos/PBDSuspensionConstraintData.h"
-
 
 void UActionBase::Initialize(UObject* WorldContextObject)
 {
@@ -19,10 +17,24 @@ void UActionBase::OnInit_Implementation(UObject* WorldContextObject)
 {
 }
 
+void UActionBase::Cancel()
+{
+	if (!bRunning) return;
+	
+	OnCancel();
+	bRunning = false;
+}
+
+void UActionBase::OnCancel_Implementation()
+{
+	
+}
+
 void UActionBase::Deinitialize()
 {
 	if (!bInitialized) return;
 	
+	Cancel();
 	OnDestroy();
 	bInitialized = false;
 }
@@ -34,6 +46,7 @@ void UActionBase::OnDestroy_Implementation()
 void UActionBase::Execute_Implementation(AActor* InInstigator)
 {
 	Instigator = InInstigator;
+	bRunning = true;
 	
 	if (!bInitialized)
 	{
@@ -57,8 +70,9 @@ UWorld* UActionBase::GetWorld() const
 	return nullptr;
 }
 
-void UActionBase::Finish() const
+void UActionBase::Finish()
 {
+	bRunning = false;
 	OnFinishDelegate.Broadcast();
 }
 

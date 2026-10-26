@@ -25,6 +25,9 @@ public:
 	void Execute(AActor* InInstigator);
 	
 	UFUNCTION(BlueprintCallable, Category = "ActionSystem")
+	void Cancel();
+	
+	UFUNCTION(BlueprintCallable, Category = "ActionSystem")
 	void Deinitialize();
 
 	//---------------------------------------
@@ -71,10 +74,13 @@ protected:
 	void OnInit(UObject* WorldContextObject);
 	
 	UFUNCTION(BlueprintNativeEvent, Category = "ActionSystem")
+	void OnCancel();
+	
+	UFUNCTION(BlueprintNativeEvent, Category = "ActionSystem")
 	void OnDestroy();
 	
 	UFUNCTION(BlueprintCallable, Category = "ActionSystem")
-	void Finish() const;
+	void Finish();
 	
 	//---------------------------------------
 	// Internal vars
@@ -83,4 +89,5 @@ protected:
 	TObjectPtr<AActor> Instigator;
 	
 	bool bInitialized = false;
+	bool bRunning = false;
 };

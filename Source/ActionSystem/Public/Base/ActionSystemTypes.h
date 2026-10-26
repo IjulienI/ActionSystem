@@ -12,7 +12,7 @@ UENUM(BlueprintType)
 enum class EActionTriggerPolicy : uint8
 {
 	Ignore,
-	Restart UMETA(Hidden),
+	Restart,
 	Queue
 };
 

@@ -34,7 +34,7 @@ public:
 	void ExecuteActions(AActor* InInstigator);
 	
 	UFUNCTION(BlueprintCallable, Category = "ActionSystem")
-	void DestroyActions() const;
+	void DestroyActions();
 
 private:
 	//---------------------------------------
@@ -47,11 +47,11 @@ private:
 	TObjectPtr<UCompositeAction> RootAction;
 	
 	bool bRunning = false;
-	int32 QueueCounter = 0;
 	
-	UPROPERTY(Transient)
-	TObjectPtr<AActor> Instigator;
+	TArray<TWeakObjectPtr<AActor>> PendingInstigators;
 	
 	UFUNCTION()
 	void OnRootActionFinished();
+	
+	void StartRootAction(AActor* InInstigator);
 };

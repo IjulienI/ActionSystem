@@ -24,6 +24,19 @@ public:
 		}
 	}
 	
+	virtual void OnCancel_Implementation() override
+	{
+		for (UActionBase* Action : Actions)
+		{
+			if (Action)
+			{
+				Action->Cancel();
+			}
+		}
+		
+		Super::OnCancel_Implementation();
+	}
+	
 	virtual void OnDestroy_Implementation() override
 	{
 		for (UActionBase* Action : Actions)

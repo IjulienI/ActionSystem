@@ -16,6 +16,16 @@ void USequentialAction::Execute_Implementation(AActor* InInstigator)
 	ExecuteAction();
 }
 
+void USequentialAction::OnCancel_Implementation()
+{
+	if (Actions.IsValidIndex(ActionIndex) && Actions[ActionIndex])
+	{
+		Actions[ActionIndex]->OnFinishDelegate.RemoveDynamic(this, &USequentialAction::OnEndAction);
+	}
+	
+	Super::OnCancel_Implementation();
+}
+
 void USequentialAction::ExecuteAction()
 {
 	while (Actions.IsValidIndex(ActionIndex) && !ensure(Actions[ActionIndex]))

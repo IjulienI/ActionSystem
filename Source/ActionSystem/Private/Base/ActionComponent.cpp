@@ -37,7 +37,7 @@ void UActionComponent::InitActions() const
 		RootAction->Initialize(World);
 		return;
 	}
-	UE_LOG(LogActionSystem, Warning, TEXT("UActionComponent::InitActions failed : Root Action is nullptr in %s"), *GetOwner()->GetName());
+	UE_LOG(LogActionSystem, Warning, TEXT("ExecuteActions: no Root Action set on %s."), *GetNameSafe(GetOwner()));
 }
 
 void UActionComponent::ExecuteActions(AActor* InInstigator)
@@ -49,31 +49,33 @@ void UActionComponent::ExecuteActions(AActor* InInstigator)
 		case EActionTriggerPolicy::Ignore:
 			return;
 		case EActionTriggerPolicy::Restart:
-			// TODO : Cancel logic
+			if (RootAction)
+			{
+				RootAction->Cancel();
+				RootAction->OnFinishDelegate.RemoveDynamic(this, &UActionComponent::OnRootActionFinished);
+			}
+			bRunning = false;
+			StartRootAction(InInstigator);
 			return;
 		case EActionTriggerPolicy::Queue:
-			++QueueCounter;
+			PendingInstigators.Add(InInstigator);
 			return;
 		}
 	}
 	
-	Instigator = InInstigator;
-	
-	if (RootAction)
-	{
-		bRunning = true;
-		RootAction->OnFinishDelegate.AddUniqueDynamic(this, &UActionComponent::OnRootActionFinished);
-		RootAction->Execute(Instigator);
-		return;
-	}
-	UE_LOG(LogActionSystem, Warning, TEXT("UActionComponent::ExecuteActions failed : Root Action is nullptr in %s"), *GetOwner()->GetName());
+	StartRootAction(InInstigator);
 }
 
-void UActionComponent::DestroyActions() const
+void UActionComponent::DestroyActions()
 {
-	if (!RootAction) return;
-	
-	RootAction->Deinitialize();
+	PendingInstigators.Empty();
+	bRunning = false;
+
+	if (RootAction)
+	{
+		RootAction->OnFinishDelegate.RemoveDynamic(this, &UActionComponent::OnRootActionFinished);
+		RootAction->Deinitialize();
+	}
 }
 
 void UActionComponent::OnRootActionFinished()
@@ -81,12 +83,33 @@ void UActionComponent::OnRootActionFinished()
 	if (RootAction)
 	{
 		RootAction->OnFinishDelegate.RemoveDynamic(this, &UActionComponent::OnRootActionFinished);
-		bRunning = false;
+	}
+	bRunning = false;
+	
+	
+	if (TriggerPolicy != EActionTriggerPolicy::Queue && PendingInstigators.IsEmpty())
+	{
+		return;
 	}
 	
-	if (TriggerPolicy == EActionTriggerPolicy::Queue && QueueCounter > 0)
+	AActor* NextInstigator = PendingInstigators[0].Get();
+	PendingInstigators.RemoveAt(0);
+	
+	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [this, NextInstigator]()
 	{
-		--QueueCounter;
-		ExecuteActions(Instigator);
+		StartRootAction(NextInstigator);
+	}));
+}
+
+void UActionComponent::StartRootAction(AActor* InInstigator)
+{
+	if (!RootAction)
+	{
+		UE_LOG(LogActionSystem, Warning, TEXT("ExecuteActions: no Root Action set on %s."), *GetNameSafe(GetOwner()));
+		return;
 	}
+
+	bRunning = true;
+	RootAction->OnFinishDelegate.AddUniqueDynamic(this, &UActionComponent::OnRootActionFinished);
+	RootAction->Execute(InInstigator);
 }

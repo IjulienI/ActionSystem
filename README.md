@@ -1,12 +1,12 @@
 # ActionSystem
 
-A small Unreal Engine plugin that lets designers attach reusable, configurable actions to any actor and trigger them from a single call.
+An Unreal Engine plugin that lets designers build gameplay sequences from small, reusable actions, set up directly in the Details panel of any actor.
 
 ![Status](https://img.shields.io/badge/status-in%20development-orange)
 ![Unreal Engine](https://img.shields.io/badge/Unreal%20Engine-5.4+-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-> **Work in progress.** The core works and is usable, but the API is still moving and several features are missing. See the [roadmap](#roadmap).
+> **Work in progress.** The core is in place and usable, but the API is still moving. See the [roadmap](#roadmap).
 
 ---
 
@@ -18,104 +18,138 @@ ActionSystem is built around that idea, the tool should explain itself. Everythi
 
 ## How it works
 
-The system has two pieces.
+Add an **Action Component** to an actor and pick its root action: **Sequential**, **Parallel** or **Random**. Fill it with actions, nest other groups inside if needed, and call `ExecuteActions` from whatever should trigger it: an overlap, an interaction, a timer, another system.
 
-**`UActionBase`** is a small, self-contained unit of behavior with its own properties: *destroy these actors*, *toggle these lights*. Actions are instanced UObjects (`EditInlineNew`, `DefaultToInstanced`), so each one is created and configured inline, in the Details panel of the actor that owns it.
+```
+Action Component
+└── Sequential
+    ├── Light Switch          (turn off the hallway lights)
+    ├── Delay  2.0 s
+    └── Parallel
+        ├── Teleport Actor    (target: Instigator)
+        └── Light Switch      (turn them back on)
+```
 
-**`UActionComponent`** holds an ordered list of actions. You add it to an actor, pick actions from the dropdown, fill in their settings, and call `ExecuteActions()` from wherever makes sense: an overlap, an interaction, a timer, another system.
+Every action is an instanced UObject, created and configured inline in the Details panel. Nothing to place in the level, no asset to create.
 
-Each action goes through a simple lifecycle:
+### Lifecycle
 
-| Step | Called | Typical use |
+| Step | Called | Purpose |
 |---|---|---|
-| `Init` | On `BeginPlay`, or manually | Cache references, apply the initial state |
-| `Execute` | Each time the component is triggered | Do the work |
-| `Destroy` | On `EndPlay`, or manually | Clean up |
+| `Init` | On `BeginPlay` | Cache references, apply the initial state |
+| `Execute` | Each time the component is triggered | Do the work, receives the actor that triggered it |
+| `Finish` | By the action, when its work is done | Tells the parent group it can move on |
+| `Destroy` | On `EndPlay` | Clean up timers and state |
 
-### Writing a new action
+`Finish` is what makes time-based actions possible. A **Sequential** waits for each child to finish before starting the next one, a **Parallel** finishes once all of its children have, and a **Delay** simply finishes when its timer runs out.
 
-In C++, inherit from `UActionBase` and override what you need:
+### Targets
+
+Actions that act on an actor use an `FActionTarget`, so designers choose who is affected without writing any logic:
+
+| Source | Resolves to |
+|---|---|
+| `Self` | The actor that owns the Action Component |
+| `Instigator` | The actor passed to `ExecuteActions`, for example the player who entered a trigger |
+| `Reference` | A specific actor picked in the level |
+
+## Available actions
+
+| Action | Type | Description |
+|---|---|---|
+| **Sequential** | Group | Runs its actions one after another, each waiting for the previous one to finish |
+| **Parallel** | Group | Runs all of its actions at once and finishes when they all have |
+| **Random** | Group | Runs one of its actions, picked at random |
+| **Delay** | Latent | Waits for a duration, in seconds |
+| **Light Switch** | Instant | Toggles a list of lights, with a configurable starting state |
+| **Teleport Actor** | Instant | Moves a target actor to a location |
+
+## Writing a new action
+
+The plugin provides two base classes, depending on whether the action takes time.
+
+**Instant actions** do their work in one go. Inherit from `UInstantAction` and override `Run`. `Finish` is called for you.
 
 ```cpp
-UCLASS(BlueprintType, Blueprintable, EditInlineNew, DefaultToInstanced)
-class UMyAction : public UActionBase
+UCLASS()
+class UHideActorAction : public UInstantAction
 {
 	GENERATED_BODY()
 
-public:
-	virtual void Execute_Implementation() override;
+protected:
+	virtual void Run_Implementation() override
+	{
+		if (AActor* Actor = ResolveTarget(Target))
+		{
+			Actor->SetActorHiddenInGame(true);
+		}
+	}
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Action")
-	TArray<TObjectPtr<AActor>> Targets;
+	FActionTarget Target;
 };
 ```
 
-The class shows up in the component's action picker straight away. Designers can also create actions in Blueprint by subclassing `ActionBase` and implementing the `Init`, `Execute` and `Destroy` events.
+**Latent actions** take time. Inherit from `UActionBase`, override `Execute`, and call `Finish()` once the work is done, as `UDelayAction` does with a timer.
 
-### Available actions
-
-- **Sequential**: Wait until the previous action is complete before starting the next one.
-- **Parallel**: Execute all of its actions at once.
-- **Delay**: Wait a while.
+New classes show up in the action picker straight away. Actions can also be created in Blueprint by subclassing `InstantAction` or `ActionBase`. A Blueprint latent action must call **Finish**, otherwise the group it belongs to will wait forever.
 
 ## Design decisions
 
-A few choices I made along the way, and why:
-
-- **Instanced UObjects rather than components or actors.** Actions only carry data and a bit of logic. Making them components would clutter the actor's hierarchy. Making them actors would clutter the level. Instanced objects keep everything inside the Details panel of the actor that owns them.
-- **`BlueprintNativeEvent` for the lifecycle.** The same action can be written in C++ for performance or in Blueprint for fast iteration, and a Blueprint can extend a C++ action through `Super` calls.
-- **World access through the Outer.** Actions override `GetWorld()` and resolve it from their owning component, so world-dependent nodes (spawning, timers, traces) work inside Blueprint actions without any extra setup.
-- **Opt-out initialization.** Actions initialize on `BeginPlay` by default. An action can disable *Auto Init* and be initialized later, which is useful when it depends on something that does not exist yet at startup.
+- **Instanced UObjects rather than components or actors.** Actions only carry data and a bit of logic. As components they would clutter the actor's hierarchy, and as actors they would clutter the level. Instanced objects keep everything inside the Details panel of the actor that owns them.
+- **A tree of groups instead of a flat list.** Flow control (sequence, parallel, random) is made of actions like any other. The component only holds one root group, and every new kind of flow can be added without touching it.
+- **Completion through a delegate.** Actions report when they are done with `Finish`, so groups do not need to know what their children do or how long they take. Instant and latent actions plug into the same groups.
+- **`InstantAction` seals `Execute`.** Its `Execute` is `final` and always calls `Finish` after `Run`, so a one-shot action can never forget to complete and stall its sequence.
+- **`BlueprintNativeEvent` for the lifecycle.** The same action can be written in C++ or in Blueprint, and a Blueprint can extend a C++ action through `Super` calls.
+- **World access through the Outer.** Actions override `GetWorld()` and resolve it from their owner, so world-dependent Blueprint nodes (spawning, timers, traces) work inside actions without extra setup.
 
 ## Current limitations
 
-Being upfront about what does not work yet:
-
-- `Execute` is synchronous. Actions that take time (a delay, a movement, a sequence) cannot signal when they are done yet. This is the next big piece of work.
-- Targets are hard references to actors placed in the level. That works for level instances, but not for actions set up on a Blueprint class.
-- `DestroyActions()` clears the action list, so a component cannot be re-initialized after it has been destroyed.
+- Triggering a component again while its actions are still running is not handled yet. There is no "ignore", "restart" or "queue" policy.
+- Running actions cannot be cancelled.
 
 ## Roadmap
 
-**Next up**
-- [x] Latent actions: completion callback, sequential and parallel execution
-- [x] Instigator passed to `Execute`, so actions can target whoever triggered them
-- [x] Flexible targets: self, instigator, specific actor
+**Core**
+- [x] Instant and latent actions, with completion callbacks
+- [x] Sequential, Parallel and Random groups
+- [x] Instigator passed to `Execute`
+- [x] Targets: self, instigator, specific actor
+- [ ] Re-trigger policy while running: ignore, restart or queue
+- [ ] Cancel running actions
+- [ ] Targets by actor tag
 
 **Flow control**
-- [ ] `Delay`, `Sequence`, `Parallel`, `Branch`, `Do Once`, `Random`
+- [x] `Delay`
+- [ ] `Branch`, `Do Once`, `Repeat`
 
 **More actions**
+- [x] Teleport an actor
+- [x] Toggle lights
 - [ ] Spawn actor, set visibility and collision, toggle component
-- [x] Move or teleport an actor
+- [ ] Move an actor over time, with a curve
 - [ ] Trigger another actor's Action Component
 - [ ] Play sound, Niagara effect, Level Sequence
 - [ ] Load and unload streaming levels
 
 **Tooling**
-- [ ] Editor validation (missing targets, empty entries)
+- [ ] Editor validation with clear messages (empty slots, missing targets)
+- [ ] Custom names for actions, shown in the Details panel
 - [ ] Debug logging and a console command to trigger actions by hand
 - [ ] A demo level built entirely with ActionSystem
 
 ## Installation
 
-**From a release**
+1. Clone the repository into your project's `Plugins/` folder:
+   ```
+   cd YourProject/Plugins
+   git clone https://github.com/IjulienI/ActionSystem.git
+   ```
+2. Regenerate project files and build.
+3. Enable **ActionSystem** in *Edit → Plugins*.
 
-1. Download the zip matching your engine version from the [Releases](https://github.com/IjulienI/ActionSystem/releases) page.
-2. Extract it into your project's `Plugins/` folder.
-3. Enable **ActionSystem** in *Edit → Plugins* and restart the editor.
-
-**From source** (C++ projects)
-
-```
-cd YourProject/Plugins
-git clone https://github.com/IjulienI/ActionSystem.git
-```
-
-Then regenerate project files and build.
-
-Developed on Unreal Engine 5.4. Release builds are provided for 5.4 and later.
+Developed on Unreal Engine 5.4. Prebuilt releases for each engine version will be published on the [Releases](https://github.com/IjulienI/ActionSystem/releases) page.
 
 ## Feedback
 
@@ -123,9 +157,9 @@ If you try it out, I would love to hear how it went. Feel free to open an issue 
 
 ## About me
 
-I'm Julien, a game programmer finishing my studies, with a focus on gameplay and tools programming in Unreal Engine. I'm currently looking for a position.
+I'm Julien, a game programmer finishing my studies at ArtFX, focused on tools and gameplay programming in Unreal Engine. I'm currently looking for a position.
 
-- [LinkedIn](www.linkedin.com/in/julien-soum-dev)
+[GitHub](https://github.com/IjulienI) · [LinkedIn](https://www.linkedin.com/in/julien-soum-dev)
 
 ## License
 

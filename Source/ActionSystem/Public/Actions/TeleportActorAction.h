@@ -16,7 +16,7 @@ public:
 	
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Action", meta = (AllowPrivateAccess = true))
-	FVector Location;
+	FActionTransform Transform;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Action", meta = (AllowPrivateAccess = true))
 	FActionTarget Target;

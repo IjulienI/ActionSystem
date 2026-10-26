@@ -8,8 +8,11 @@ void UTeleportActorAction::Run_Implementation()
 	Super::Run_Implementation();
 	
 	AActor* Actor = ResolveTarget(Target);
-	if (ensure(Actor))
+	FTransform Destination;
+	if (!Actor || !ResolveTransform(Transform, Destination))
 	{
-		Actor->SetActorLocation(Location);
+		return;
 	}
+	
+	Actor->SetActorLocationAndRotation(Destination.GetLocation(), Destination.GetRotation(), false, nullptr, ETeleportType::TeleportPhysics);
 }

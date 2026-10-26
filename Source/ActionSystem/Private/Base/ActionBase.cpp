@@ -3,6 +3,9 @@
 
 #include "Base/ActionBase.h"
 
+#include "ActionSystem.h"
+#include "Chaos/PBDSuspensionConstraintData.h"
+
 
 void UActionBase::Initialize(UObject* WorldContextObject)
 {
@@ -71,4 +74,37 @@ AActor* UActionBase::ResolveTarget(const FActionTarget& Target) const
 		return Target.Reference;
 	}
 	return nullptr;
+}
+
+bool UActionBase::ResolveTransform(const FActionTransform& InTransform, FTransform& OutTransform) const
+{
+	if (InTransform.Source == EActionTransformSource::Absolute)
+	{
+		OutTransform = InTransform.Transform;
+		return true;
+	}
+	
+	const AActor* Actor = nullptr;
+	switch (InTransform.Source)
+	{
+	case EActionTransformSource::Self:
+		Actor = GetTypedOuter<AActor>();
+		break;
+	case EActionTransformSource::Instigator:
+		Actor = Instigator;
+		break;
+	case EActionTransformSource::Reference:
+		Actor = InTransform.Reference;
+		break;
+	default:
+		break;
+	}
+	
+	if (!Actor)
+	{
+		UE_LOG(LogActionSystem, Warning, TEXT("%s: transform source is invalid (no actor to read from) in %s") ,*GetClass()->GetName(), *GetNameSafe(GetTypedOuter<AActor>()));
+		return false;
+	}
+	OutTransform = Actor->GetActorTransform();
+	return true;
 }

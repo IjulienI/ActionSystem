@@ -100,7 +100,7 @@ protected:
 	//---------------------------------------
 	// Internal vars
 	//---------------------------------------
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Action", AdvancedDisplay)
+	UPROPERTY(Transient, BlueprintReadOnly, Category = "Action", AdvancedDisplay)
 	TObjectPtr<AActor> Instigator;
 	
 	bool bInitialized = false;

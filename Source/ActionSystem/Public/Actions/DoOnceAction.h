@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Base/ActionBase.h"
+#include "Base/DecoratorAction.h"
 #include "DoOnceAction.generated.h"
 
 UCLASS()
-class ACTIONSYSTEM_API UDoOnceAction : public UActionBase
+class ACTIONSYSTEM_API UDoOnceAction : public UDecoratorAction
 {
 	GENERATED_BODY()
 	
@@ -20,15 +20,7 @@ public:
 	
 protected:
 	virtual void OnInit_Implementation(UObject* WorldContextObject) override;
-	virtual void OnCancel_Implementation() override;
-	virtual void OnDestroy_Implementation() override;
 	
 private:
-	UPROPERTY(EditAnywhere, Category = "Action", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UActionBase> Action;
-
 	bool bWasTriggered = false;
-
-	UFUNCTION()
-	void OnActionFinished();
 };

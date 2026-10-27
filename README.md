@@ -122,7 +122,7 @@ New classes show up in the action picker straight away. Actions can also be crea
 
 **Flow control**
 - [x] `Delay`
-- [ ] `Branch`, `Do Once`, `Repeat`
+- [x] `Branch`, `Do Once`, `Repeat`
 
 **More actions**
 - [x] Teleport an actor
